@@ -8,6 +8,7 @@
 package ravensproject;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
 /**
@@ -30,7 +31,12 @@ public class RavensFigure {
      */
     public RavensFigure(String name, String problemName, String setName) {
         this.name=name;
-        visualFilename="Problems" + File.separator + setName + File.separator + problemName + File.separator + name + ".png";
+        try {
+			visualFilename=(new File(RavensProject.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())) + "\\Problems" + File.separator + setName + File.separator + problemName + File.separator + name + ".png";
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         objects=new HashMap<>();
     }
     

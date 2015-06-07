@@ -12,6 +12,7 @@
 
 package ravensproject;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +39,9 @@ public class RavensProject {
         
         Scanner r = null;
         try {                                                           // ProblemSetList.txt lists the sets to solve.
-            r = new Scanner(new File("Problems" + File.separator + "ProblemSetList.txt"));
+        	System.out.println( (new File(RavensProject.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())) + "\\Problems" + File.separator + "ProblemSetList.txt");
+
+            r = new Scanner(new File((new File(RavensProject.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())) + "\\Problems" + File.separator + "ProblemSetList.txt"));
         } catch(Exception ex) {                                         // Sets will be solved in the order they appear in ProblemSetList.txt.
             System.out.println(ex);                                     // You may modify ProblemSetList.txt to toggle what sets your agent addresses.
                                                                         // Note that we will use a fresh copy of all problem sets and of ProblemSetList.txt when grading.
@@ -47,8 +50,10 @@ public class RavensProject {
         
         while(r.hasNext()) {                                            // Load each set in order.
             String line = r.nextLine();
+            System.out.println("Loading : " + line);
             sets.add(new ProblemSet(line));
         }
+        //System.console().readLine();
         
         // Initializing problem-solving agent from Agent.java
         Agent agent = new Agent();                                      // Your agent will be initialized with its default constructor.
@@ -74,6 +79,7 @@ public class RavensProject {
                         results.println(problem.getName() + "," + problem.getGivenAnswer() + "," + problem.getCorrect() + "," + problem.checkAnswer(0));
                     } catch(Exception ex) {
                         System.out.println("Error encountered in " + problem.getName());
+                        System.out.println(ex);
                         results.println(problem.getName() + "," + problem.getGivenAnswer() + ",Error," + problem.checkAnswer(0));
                     }
                 }

@@ -1,5 +1,10 @@
 package ravensproject;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 // Uncomment these lines to access image processing.
 //import java.awt.Image;
 //import java.io.File;
@@ -56,6 +61,105 @@ public class Agent {
      * @return your Agent's answer to this problem
      */
     public int Solve(RavensProblem problem) {
+    	System.out.println("===================================================================================================================================================");
+    	System.out.print(problem.getName() + " | " + problem.getProblemType() );
+    	if (problem.hasVerbal()) { System.out.print(" | Has Verbal"); }
+    	if (problem.hasVisual()) { System.out.print(" | Has Visual"); }
+    	System.out.println();
+    	
+    	for(String k : problem.getFigures().keySet())
+    		System.out.print( " " + k + "." + problem.getFigures().get(k).getObjects().values().size());
+    	System.out.println();
+    	
+    	for(String key : problem.getFigures().keySet())
+    	{
+    		if( key.equals("A") || key.equals("B") || key.equals("C"))
+    			
+    		for(RavensObject obj : problem.getFigures().get(key).getObjects().values() )
+    		{ 			    			
+    			    String figureData = "";
+    				for(String aKey : obj.getAttributes().keySet())
+        				figureData += "[" + aKey + " : " + obj.getAttributes().get(aKey) + "]";
+    				System.out.println(problem.getFigures().get(key).getName() + " | " + obj.getName()  + " " +  figureData );
+    		}
+    		
+    	}
+    	
+    	System.out.println("<<<<<<<<<< answers >>>>>>>>>>");
+    	
+    	for(String key : problem.getFigures().keySet())
+    	{
+    		for(String oKey : problem.getFigures().get(key).getObjects().keySet())
+    		{
+    			if (	problem.getFigures().get(key).getName().equalsIgnoreCase("1") || 
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("2") || 
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("3") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("4") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("5") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("6")	)
+    			{
+    				String figureData = "";
+    				for(String aKey : problem.getFigures().get(key).getObjects().get(oKey).getAttributes().keySet())
+        				figureData += "[" + aKey + " : " + problem.getFigures().get(key).getObjects().get(oKey).getAttributes().get(aKey) + "]";
+    				System.out.println(problem.getFigures().get(key).getName() + " | " + problem.getFigures().get(key).getObjects().get(oKey).getName() + " " + figureData );
+    			}
+    		}    		
+    	}
+    	
+    	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
+    	
+    	if (AreIdentical(problem.getFigures().get("A").getObjects().get("a") , problem.getFigures().get("B").getObjects().get("b"))) 
+		{
+    		
+    		System.out.println("A == B");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
+		}
+		if (AreIdentical(problem.getFigures().get("A").getObjects().get("a"), problem.getFigures().get("C").getObjects().get("c"))) 
+		{
+			System.out.println("A == C");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
+		}	
+    	
+		System.out.println("<<<<<<<<<< RESULT >>>>>>>>>>");
+    	
         return -1;
     }
+    
+	private boolean AreIdentical(RavensObject obj1,	RavensObject obj2) {
+		try
+		{
+		if (obj1.getAttributes().keySet().size() != obj2.getAttributes().keySet().size())
+			return false;
+		for(String k1 : obj1.getAttributes().keySet())
+		{
+			if(obj2.getAttributes().keySet().contains(k1))
+			{
+				if (!obj1.getAttributes().get(k1).equalsIgnoreCase(obj2.getAttributes().get(k1)))
+					return false;
+			}
+			else
+				return false;
+		}
+		
+		for(String k2 : obj2.getAttributes().keySet())
+		{
+			if(obj1.getAttributes().keySet().contains(k2))
+			{
+				if (!obj2.getAttributes().get(k2).equalsIgnoreCase(obj1.getAttributes().get(k2)))
+					return false;
+			}
+			else
+				return false;
+		}
+		}
+		catch(Exception ex)
+		{
+			
+		}
+		
+		return true;
+	}
+	private boolean AreIdentical(RavensFigure f1, RavensFigure f2) {
+		return false;
+	}
 }

@@ -1,0 +1,152 @@
+package ravensproject;
+
+import java.util.Map;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
+
+// Uncomment these lines to access image processing.
+//import java.awt.Image;
+//import java.io.File;
+//import javax.imageio.ImageIO;
+
+/**
+ * Your Agent for solving Raven's Progressive Matrices. You MUST modify this
+ * file.
+ * 
+ * You may also create and submit new files in addition to modifying this file.
+ * 
+ * Make sure your file retains methods with the signatures:
+ * public Agent()
+ * public char Solve(RavensProblem problem)
+ * 
+ * These methods will be necessary for the project's main method to run.
+ * 
+ */
+public class Agent {
+    /**
+     * The default constructor for your Agent. Make sure to execute any
+     * processing necessary before your Agent starts solving problems here.
+     * 
+     * Do not add any variables to this signature; they will not be used by
+     * main().
+     * 
+     */
+    public Agent() {
+        
+    }
+    /**
+     * The primary method for solving incoming Raven's Progressive Matrices.
+     * For each problem, your Agent's Solve() method will be called. At the
+     * conclusion of Solve(), your Agent should return a String representing its
+     * answer to the question: "1", "2", "3", "4", "5", or "6". These Strings
+     * are also the Names of the individual RavensFigures, obtained through
+     * RavensFigure.getName().
+     * 
+     * In addition to returning your answer at the end of the method, your Agent
+     * may also call problem.checkAnswer(String givenAnswer). The parameter
+     * passed to checkAnswer should be your Agent's current guess for the
+     * problem; checkAnswer will return the correct answer to the problem. This
+     * allows your Agent to check its answer. Note, however, that after your
+     * agent has called checkAnswer, it will *not* be able to change its answer.
+     * checkAnswer is used to allow your Agent to learn from its incorrect
+     * answers; however, your Agent cannot change the answer to a question it
+     * has already answered.
+     * 
+     * If your Agent calls checkAnswer during execution of Solve, the answer it
+     * returns will be ignored; otherwise, the answer returned at the end of
+     * Solve will be taken as your Agent's answer to this problem.
+     * 
+     * @param problem the RavensProblem your agent should solve
+     * @return your Agent's answer to this problem
+     */
+    public int Solve(RavensProblem problem) {
+    	System.out.println("===================================================================================================================================================");
+    	System.out.print(problem.getName() + " | " + problem.getProblemType() );
+    	if (problem.hasVerbal()) { System.out.print(" | Has Verbal"); }
+    	if (problem.hasVisual()) { System.out.print(" | Has Visual"); }
+    	System.out.println();
+    	
+    	for(String key : problem.getFigures().keySet())
+    	{
+    		for(String oKey : problem.getFigures().get(key).getObjects().keySet())
+    		{
+    			
+    			
+    			if (	problem.getFigures().get(key).getObjects().get(oKey).getName().equalsIgnoreCase("A") || 
+    					problem.getFigures().get(key).getObjects().get(oKey).getName().equalsIgnoreCase("B") || 
+    					problem.getFigures().get(key).getObjects().get(oKey).getName().equalsIgnoreCase("C")	)
+    			{
+    				String figureData = "";
+    				for(String aKey : problem.getFigures().get(key).getObjects().get(oKey).getAttributes().keySet())
+        				figureData += "[" + aKey + " : " + problem.getFigures().get(key).getObjects().get(oKey).getAttributes().get(aKey) + "]";
+    				System.out.println(problem.getFigures().get(key).getName() + " | " + problem.getFigures().get(key).getObjects().get(oKey).getName()  + " " +  figureData );
+    			}
+    		}
+    		
+    	}
+    	
+    	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
+    	
+    	if (AreIdentical(problem.getFigures().get("A").getObjects().get("a") , problem.getFigures().get("B").getObjects().get("b"))) 
+		{
+    		System.out.println("A == B");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
+		}
+		if (AreIdentical(problem.getFigures().get("A").getObjects().get("a"), problem.getFigures().get("C").getObjects().get("c"))) 
+		{
+			System.out.println("A == C");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
+		}
+    	
+    	System.out.println("<<<<<<<<<< answers >>>>>>>>>>");
+    	
+    	for(String key : problem.getFigures().keySet())
+    	{
+    		for(String oKey : problem.getFigures().get(key).getObjects().keySet())
+    		{
+    			if (	problem.getFigures().get(key).getName().equalsIgnoreCase("1") || 
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("2") || 
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("3") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("4") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("5") ||
+    					problem.getFigures().get(key).getName().equalsIgnoreCase("6")	)
+    			{
+    				String figureData = "";
+    				for(String aKey : problem.getFigures().get(key).getObjects().get(oKey).getAttributes().keySet())
+        				figureData += "[" + aKey + " : " + problem.getFigures().get(key).getObjects().get(oKey).getAttributes().get(aKey) + "]";
+    				System.out.println(problem.getFigures().get(key).getName() + " | " + problem.getFigures().get(key).getObjects().get(oKey).getName() + " " + figureData );
+    			}
+    		}
+    		
+    	}
+    	
+    	
+        return -1;
+    }
+	private boolean AreIdentical(RavensObject obj1,	RavensObject obj2) {
+		if (obj1.getAttributes().keySet().size() != obj2.getAttributes().keySet().size())
+			return false;
+		for(String k1 : obj1.getAttributes().keySet())
+		{
+			if(obj2.getAttributes().keySet().contains(k1))
+				if (!obj1.getAttributes().get(k1).equalsIgnoreCase(obj2.getAttributes().get(k1)))
+					return false;
+			else
+				return false;
+		}
+		
+		for(String k2 : obj2.getAttributes().keySet())
+		{
+			if(obj1.getAttributes().keySet().contains(k2))
+				if (!obj2.getAttributes().get(k2).equalsIgnoreCase(obj1.getAttributes().get(k2)))
+					return false;
+			else
+				return false;
+		}
+		
+		return true;
+	}
+	private boolean AreIdentical(RavensFigure f1, RavensFigure f2) {
+		return false;
+	}
+}
