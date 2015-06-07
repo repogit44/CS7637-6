@@ -108,13 +108,13 @@ public class Agent {
     	
     	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
     	
-    	if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B"))) 
+    	if (AreIdentical(problem.getFigures().get("A").getObjects().get("a") , problem.getFigures().get("B").getObjects().get("b"))) 
 		{
     		
     		System.out.println("A == B");
 			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
 		}
-		if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))) 
+		if (AreIdentical(problem.getFigures().get("A").getObjects().get("a"), problem.getFigures().get("C").getObjects().get("c"))) 
 		{
 			System.out.println("A == C");
 			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
@@ -160,17 +160,6 @@ public class Agent {
 		return true;
 	}
 	private boolean AreIdentical(RavensFigure f1, RavensFigure f2) {
-		try
-		{
-			if(f1.getObjects().size() != f2.getObjects().size())
-				return false;
-			
-		}
-		catch(Exception ex)
-		{
-			
-		}
-		
-		return true;
+		return false;
 	}
 }
