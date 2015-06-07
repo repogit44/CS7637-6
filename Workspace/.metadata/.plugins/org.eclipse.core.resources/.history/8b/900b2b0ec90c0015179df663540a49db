@@ -107,32 +107,14 @@ public class Agent {
     	}
     	
     	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
-    	if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) &
-    			AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))    			
-    			)
-    	{
-    		System.out.println("A == B == C");
-    		// Look for something similar to A
-    		for(RavensFigure f: problem.getFigures().values())
-    		{
-    			if (!f.getName().equalsIgnoreCase("A") & !f.getName().equalsIgnoreCase("B") &
-    					!f.getName().equalsIgnoreCase("C") & AreIdentical(f, problem.getFigures().get("A")))
-    			{
-    				System.out.println(f.getName());
-    			}
-    		}
-    	}
+    	
+    	if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B"))) 
+		{
     		
-    	if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) &
-    			!AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))
-    			) 
-		{    		
     		System.out.println("A == B");
 			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
 		}
-		if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C")) &
-				!AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B"))
-				) 
+		if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))) 
 		{
 			System.out.println("A == C");
 			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
@@ -152,8 +134,6 @@ public class Agent {
 		{
 			if(obj2.getAttributes().keySet().contains(k1))
 			{
-				if(k1.equalsIgnoreCase("inside") || k1.equalsIgnoreCase("above"))
-					continue;
 				if (!obj1.getAttributes().get(k1).equalsIgnoreCase(obj2.getAttributes().get(k1)))
 					return false;
 			}
@@ -165,8 +145,6 @@ public class Agent {
 		{
 			if(obj1.getAttributes().keySet().contains(k2))
 			{
-				if(k2.equalsIgnoreCase("inside") || k2.equalsIgnoreCase("above"))
-					continue;
 				if (!obj2.getAttributes().get(k2).equalsIgnoreCase(obj1.getAttributes().get(k2)))
 					return false;
 			}
@@ -186,33 +164,13 @@ public class Agent {
 		{
 			if(f1.getObjects().size() != f2.getObjects().size())
 				return false;
-			else
-			{
-				HashMap<String,Boolean> objCompareResults = new HashMap<String, Boolean>(); 
-				for(int i =0; i<f1.getObjects().size(); i++)
-				{
-					for(int j =0; j<f2.getObjects().size(); j++)
-					{
-						if (	((RavensObject)((f1.getObjects().values().toArray())[i])).getAttributes().size() == 
-								((RavensObject)((f2.getObjects().values().toArray())[j])).getAttributes().size()  )
-						{
-							String ck = (((RavensObject)((f1.getObjects().values().toArray())[i])).getName().toLowerCase() + "." + ((RavensObject)((f2.getObjects().values().toArray())[j])).getName().toLowerCase());
-							if (!objCompareResults.containsKey(ck))
-								objCompareResults.put(ck, AreIdentical( (RavensObject)((f1.getObjects().values().toArray())[i]), (RavensObject)((f2.getObjects().values().toArray())[j])  ));							
-						}
-						else
-						{
-							
-						}							
-					}					
-				}
-				if (objCompareResults.containsValue(false))
-					return false;
-			}
+			
 		}
 		catch(Exception ex)
-		{			
+		{
+			
 		}
+		
 		return true;
 	}
 }

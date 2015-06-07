@@ -193,8 +193,7 @@ public class Agent {
 				{
 					for(int j =0; j<f2.getObjects().size(); j++)
 					{
-						if (	((RavensObject)((f1.getObjects().values().toArray())[i])).getAttributes().size() == 
-								((RavensObject)((f2.getObjects().values().toArray())[j])).getAttributes().size()  )
+						if (((RavensObject)((f1.getObjects().values().toArray())[i])).getAttributes().size() == ((RavensObject)((f2.getObjects().values().toArray())[j])).getAttributes().size()  )
 						{
 							String ck = (((RavensObject)((f1.getObjects().values().toArray())[i])).getName().toLowerCase() + "." + ((RavensObject)((f2.getObjects().values().toArray())[j])).getName().toLowerCase());
 							if (!objCompareResults.containsKey(ck))
@@ -206,8 +205,7 @@ public class Agent {
 						}							
 					}					
 				}
-				if (objCompareResults.containsValue(false))
-					return false;
+				return objCompareResults.containsValue(false);
 			}
 		}
 		catch(Exception ex)

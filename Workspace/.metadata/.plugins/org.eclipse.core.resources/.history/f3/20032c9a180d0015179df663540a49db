@@ -146,8 +146,6 @@ public class Agent {
 	private boolean AreIdentical(RavensObject obj1,	RavensObject obj2) {
 		try
 		{
-		if (obj1.getAttributes().keySet().size() != obj2.getAttributes().keySet().size())
-			return false;
 		for(String k1 : obj1.getAttributes().keySet())
 		{
 			if(obj2.getAttributes().keySet().contains(k1))
