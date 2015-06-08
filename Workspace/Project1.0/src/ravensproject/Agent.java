@@ -1,9 +1,7 @@
 package ravensproject;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 // Uncomment these lines to access image processing.
 //import java.awt.Image;
@@ -61,6 +59,228 @@ public class Agent {
      * @return your Agent's answer to this problem
      */
     public int Solve(RavensProblem problem) {
+    	printProblemInformation(problem);
+    	//System.out.print(problem.getName() + " | " + problem.getProblemType() );
+    	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
+    	// Case 1 - 3 Identical objects - Finalized
+    	if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) & AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))   			    			)
+    	{
+    		System.out.println("A == B == C");
+    		// Look for something similar to A
+    		for(RavensFigure f: problem.getFigures().values())
+    		{
+    			if (!f.getName().equalsIgnoreCase("A") & !f.getName().equalsIgnoreCase("B") &
+    					!f.getName().equalsIgnoreCase("C") & AreIdentical(f, problem.getFigures().get("A")))
+    			{
+    				System.out.println(f.getName());
+    				return Integer.parseInt(f.getName());
+    			}
+    		}
+    	}
+    	
+    	// Case 2 - Identical objects per row - Finalized
+    	if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) & !AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))    			) 
+		{    		
+    		System.out.println("A == B");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
+    		for(RavensFigure f: problem.getFigures().values())
+    		{
+    			if (!f.getName().equalsIgnoreCase("A") & !f.getName().equalsIgnoreCase("B") &
+    					!f.getName().equalsIgnoreCase("C") & AreIdentical(f, problem.getFigures().get("C")))
+    			{
+    				System.out.println(f.getName());
+    				return Integer.parseInt(f.getName());
+    			}
+    		}
+		}
+    	
+    	// Case 3 - Identical objects per column - Finalized
+		if (AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C")) & !AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B"))				) 
+		{
+			System.out.println("A == C");
+			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
+			for(RavensFigure f: problem.getFigures().values())
+    		{
+    			if (!f.getName().equalsIgnoreCase("A") & !f.getName().equalsIgnoreCase("B") &
+    					!f.getName().equalsIgnoreCase("C") & AreIdentical(f, problem.getFigures().get("B")))
+    			{
+    				System.out.println(f.getName());
+    				return Integer.parseInt(f.getName());
+    			}
+    		}
+		}	
+		
+		HashMap<String,String> xTransformationAttributes = null;
+		xTransformationAttributes = getTransformationAttributes(problem.getFigures().get("A"), problem.getFigures().get("B"));
+		if (xTransformationAttributes != null)
+		{
+			RavensFigure answer = null;
+			answer = findTransformedObjectMatch(problem.getFigures().get("C"), xTransformationAttributes, problem);
+			if (answer != null)
+			{
+				System.out.println(answer.getName());
+				return Integer.parseInt(answer.getName());
+			}
+		}
+		HashMap<String,String> yTransformationAttributes = null;
+		yTransformationAttributes = getTransformationAttributes(problem.getFigures().get("A"), problem.getFigures().get("C"));
+		if (yTransformationAttributes != null)
+		{
+			RavensFigure answer = null;
+			answer = findTransformedObjectMatch(problem.getFigures().get("B"), yTransformationAttributes, problem);
+			if (answer != null)
+			{
+				System.out.println(answer.getName());
+				return Integer.parseInt(answer.getName());
+			}
+		}
+		
+		System.out.println("<<<<<<<<<< RESULT >>>>>>>>>>");
+		System.out.println(-1);
+        return -1;
+    }
+    
+    private RavensFigure findTransformedObjectMatch(RavensFigure sourceFigure, HashMap<String, String> transformationAttributes, RavensProblem problem) 
+    {
+    	System.out.println("Transformation attributes: ");
+    	for(String k: transformationAttributes.keySet())
+    		System.out.println("[" + k + ":" + transformationAttributes.get(k) + "]");
+    	
+    	HashMap<String,String> desiredObjectAttributes1 = new HashMap<String,String>();
+    	HashMap<String,String> desiredObjectAttributes2 = new HashMap<String,String>();
+    	
+    	for(String k1 : ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().keySet())
+		{
+			if(transformationAttributes.containsKey(k1))
+			{
+				if(k1.equalsIgnoreCase("angle"))
+				{
+					int transformationValue = Integer.valueOf(transformationAttributes.get(k1));
+					int newValue1 = Integer.valueOf(((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1)) + transformationValue;
+					if (newValue1 > 360)
+						newValue1 = Math.abs(newValue1 - 360);
+					desiredObjectAttributes1.put(k1, String.valueOf(newValue1));
+				}
+				else
+				{
+					if ((transformationAttributes.get(k1).split(">"))[0].equalsIgnoreCase(((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1)))
+						desiredObjectAttributes1.put(k1, (transformationAttributes.get(k1).split(">"))[1]);
+				}
+			}
+		}
+    	
+    	for(String k1 : ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().keySet())
+    		if(!desiredObjectAttributes1.containsKey(k1)) desiredObjectAttributes1.put(k1, ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1));
+    	
+    	if(transformationAttributes.containsKey("angle"))
+    	{
+        	for(String k1 : ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().keySet())
+    		{
+    			if(transformationAttributes.containsKey(k1))
+    			{
+    				if(k1.equalsIgnoreCase("angle"))
+    				{
+    					int transformationValue = Integer.valueOf(transformationAttributes.get(k1));
+    					int newValue1 = Integer.valueOf(((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1)) - transformationValue;
+    					if (newValue1 > 360)
+    						newValue1 = Math.abs(newValue1 - 360);
+    					desiredObjectAttributes2.put(k1, String.valueOf(newValue1));
+    				}
+    				else
+    				{
+    					if ((transformationAttributes.get(k1).split(">"))[0].equalsIgnoreCase(((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1)))
+    						desiredObjectAttributes2.put(k1, (transformationAttributes.get(k1).split(">"))[1]);
+    				}
+    			}
+    		}
+        	
+        	for(String k1 : ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().keySet())
+        		if(!desiredObjectAttributes2.containsKey(k1)) desiredObjectAttributes2.put(k1, ((RavensObject) (sourceFigure.getObjects().values().toArray())[0]).getAttributes().get(k1));
+    	}
+    	
+    	System.out.println("We looking for an object with these specs: ");
+    	for(String k: desiredObjectAttributes1.keySet())
+    		System.out.println("[" + k + ":" + desiredObjectAttributes1.get(k) + "]");
+    	System.out.println("or an object with these specs: ");
+    	for(String k: desiredObjectAttributes1.keySet())
+    		System.out.println("[" + k + ":" + desiredObjectAttributes2.get(k) + "]");
+    	
+    	for(RavensFigure destFigure: problem.getFigures().values())
+    	{
+    		if(		destFigure.getName().equalsIgnoreCase("A") ||
+    				destFigure.getName().equalsIgnoreCase("B") ||
+    				destFigure.getName().equalsIgnoreCase("C")
+    				) continue;
+    		if((sourceFigure.getObjects().size()==1)& (destFigure.getObjects().size()==1))
+    		{
+    			if(MatchingObject((RavensObject) destFigure.getObjects().values().toArray()[0],desiredObjectAttributes1))
+    				return destFigure;
+    			if(MatchingObject((RavensObject) destFigure.getObjects().values().toArray()[0],desiredObjectAttributes2))
+    				return destFigure;
+    		}
+    	}
+    	
+		return null;
+	}
+	private boolean MatchingObject(RavensObject obj, HashMap<String, String> desiredObjectAttributes) 
+	{
+		if(obj.getAttributes().size() != desiredObjectAttributes.size())
+			return false;
+		for(String k : desiredObjectAttributes.keySet())
+		{
+			if(!(obj.getAttributes().containsKey(k) & obj.getAttributes().get(k).equalsIgnoreCase(desiredObjectAttributes.get(k) ) ))
+				return false;
+		}
+		return true;
+	}
+	private HashMap<String, String> getTransformationAttributes(RavensFigure f1, RavensFigure f2) 
+    {
+    	HashMap<String,String> transformationAttributes = new HashMap<String,String>(); 
+    	if(f1.getObjects().size() != f2.getObjects().size())
+    	{
+    		if(f1.getObjects().size() > f2.getObjects().size()) 
+    		{
+    			transformationAttributes.put("RemoveObjects", String.valueOf(f1.getObjects().size() - f2.getObjects().size()) );
+    			// Find added objects and store them in a global variable
+    		}
+    		if(f1.getObjects().size() < f2.getObjects().size()) transformationAttributes.put("AddObjects", String.valueOf(f1.getObjects().size() - f2.getObjects().size()) );
+    	}
+    	else
+    	{
+    		if((f1.getObjects().size()==1)& (f2.getObjects().size()==1))
+    		{
+    			transformationAttributes = getTransformationAttributes((RavensObject)f1.getObjects().values().toArray()[0] , (RavensObject)f2.getObjects().values().toArray()[0]);
+    		}    		
+    	}
+    	
+		return transformationAttributes;
+	}
+    
+	private HashMap<String, String> getTransformationAttributes(RavensObject obj1,RavensObject obj2) 
+	{
+		HashMap<String,String> transformationAttributes = new HashMap<String,String>(); 
+		for(String k1 : obj1.getAttributes().keySet())
+		{
+			if(obj2.getAttributes().keySet().contains(k1))
+			{
+				if(k1.equalsIgnoreCase("inside") || k1.equalsIgnoreCase("above"))
+					continue;
+				if(k1.equalsIgnoreCase("angle"))
+				{
+					int v = Integer.valueOf(obj1.getAttributes().get(k1)) - Integer.valueOf(obj2.getAttributes().get(k1)) ;
+					transformationAttributes.put("angle", String.valueOf(Math.abs(v)) );
+				}
+				else
+				{
+					if(!obj1.getAttributes().get(k1).equalsIgnoreCase(obj2.getAttributes().get(k1)))
+						transformationAttributes.put(k1, (obj1.getAttributes().get(k1) + ">" +  obj2.getAttributes().get(k1)));
+				}
+			}
+		}
+		return transformationAttributes;
+	}
+	
+	private void printProblemInformation(RavensProblem problem) {
     	System.out.println("===================================================================================================================================================");
     	System.out.print(problem.getName() + " | " + problem.getProblemType() );
     	if (problem.hasVerbal()) { System.out.print(" | Has Verbal"); }
@@ -105,45 +325,9 @@ public class Agent {
     			}
     		}    		
     	}
-    	
-    	System.out.println("<<<<<<<<<< REASONING >>>>>>>>>>");
-    	if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) &
-    			AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))    			
-    			)
-    	{
-    		System.out.println("A == B == C");
-    		// Look for something similar to A
-    		for(RavensFigure f: problem.getFigures().values())
-    		{
-    			if (!f.getName().equalsIgnoreCase("A") & !f.getName().equalsIgnoreCase("B") &
-    					!f.getName().equalsIgnoreCase("C") & AreIdentical(f, problem.getFigures().get("A")))
-    			{
-    				System.out.println(f.getName());
-    			}
-    		}
-    	}
-    		
-    	if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B")) &
-    			!AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C"))
-    			) 
-		{    		
-    		System.out.println("A == B");
-			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("C"), problem.getFigures().get("1:6")) == TRUE
-		}
-		if (	AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("C")) &
-				!AreIdentical(problem.getFigures().get("A"), problem.getFigures().get("B"))
-				) 
-		{
-			System.out.println("A == C");
-			// loop on AnswerObjects till find AreIdentical(problem.getFigures().get("B"), problem.getFigures().get("1:6")) == TRUE
-		}	
-    	
-		System.out.println("<<<<<<<<<< RESULT >>>>>>>>>>");
-    	
-        return -1;
-    }
-    
-	private boolean AreIdentical(RavensObject obj1,	RavensObject obj2) {
+	}
+	
+    private boolean AreIdentical(RavensObject obj1,	RavensObject obj2) {
 		try
 		{
 		if (obj1.getAttributes().keySet().size() != obj2.getAttributes().keySet().size())
@@ -174,21 +358,18 @@ public class Agent {
 				return false;
 		}
 		}
-		catch(Exception ex)
-		{
-			
-		}
-		
+		catch(Exception ex){System.out.println(ex);}		
 		return true;
 	}
+    
 	private boolean AreIdentical(RavensFigure f1, RavensFigure f2) {
+		boolean[] objCompareResults = new boolean[f1.getObjects().size()];
 		try
 		{
 			if(f1.getObjects().size() != f2.getObjects().size())
 				return false;
 			else
-			{
-				HashMap<String,Boolean> objCompareResults = new HashMap<String, Boolean>(); 
+			{ 
 				for(int i =0; i<f1.getObjects().size(); i++)
 				{
 					for(int j =0; j<f2.getObjects().size(); j++)
@@ -196,23 +377,66 @@ public class Agent {
 						if (	((RavensObject)((f1.getObjects().values().toArray())[i])).getAttributes().size() == 
 								((RavensObject)((f2.getObjects().values().toArray())[j])).getAttributes().size()  )
 						{
-							String ck = (((RavensObject)((f1.getObjects().values().toArray())[i])).getName().toLowerCase() + "." + ((RavensObject)((f2.getObjects().values().toArray())[j])).getName().toLowerCase());
-							if (!objCompareResults.containsKey(ck))
-								objCompareResults.put(ck, AreIdentical( (RavensObject)((f1.getObjects().values().toArray())[i]), (RavensObject)((f2.getObjects().values().toArray())[j])  ));							
+							objCompareResults[i] = AreIdentical( 
+									(RavensObject)((f1.getObjects().values().toArray())[i]), 
+									(RavensObject)((f2.getObjects().values().toArray())[j]));
+								//return false;
 						}
-						else
-						{
-							
-						}							
+						//else { continue; }					
 					}					
 				}
-				if (objCompareResults.containsValue(false))
-					return false;
+				for (boolean b : objCompareResults)
+				{
+					if (!b) return b;
+				}
 			}
 		}
-		catch(Exception ex)
-		{			
-		}
+		catch(Exception ex){System.out.println(ex);}
 		return true;
+	}
+    
+	private int getSimilarityScore(RavensObject obj1,	RavensObject obj2) 
+	{
+		int score = 0;
+		try
+		{
+		if (obj1.getAttributes().keySet().size() != obj2.getAttributes().keySet().size())
+			return -1;
+		for(String k1 : obj1.getAttributes().keySet())
+		{
+			if(obj2.getAttributes().keySet().contains(k1))
+			{
+				if(k1.equalsIgnoreCase("inside") || k1.equalsIgnoreCase("above"))
+					continue;
+				if (obj1.getAttributes().get(k1).equalsIgnoreCase(obj2.getAttributes().get(k1)))
+					return score++;
+			}
+		}
+		}
+		catch(Exception ex) {System.out.println(ex);}
+		return score;
+	}
+	
+	private int getSimilarityScore(RavensFigure f1, RavensFigure f2) 
+	{
+		int score = 0;
+		try
+		{
+			if(f1.getObjects().size() != f2.getObjects().size())
+				return -1;
+			else
+			{ 
+				for(int i =0; i<f1.getObjects().size(); i++)
+				{
+					for(int j =0; j<f2.getObjects().size(); j++)
+					{
+						score += getSimilarityScore(	(RavensObject)((f1.getObjects().values().toArray())[i]), 
+														(RavensObject)((f2.getObjects().values().toArray())[j])); 
+					}					
+				}
+			}
+		}
+		catch(Exception ex) {System.out.println(ex);}
+		return score;
 	}
 }
